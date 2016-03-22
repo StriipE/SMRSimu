@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Collections;
 using Assets.Code.Environnement.Agents;
+using Assets.Code.Environnement.Items;
 
 namespace Assets.Code.GUI
 {
@@ -14,35 +15,92 @@ namespace Assets.Code.GUI
         {
 
         }
+
+        // This method must be called from a GameObject in Unity
+        // Starts the Coroutine to create an agent on click
         public void createAgent()
         {
             Debug.Log("Attente d'un agent");
-            StartCoroutine(WaitForMouseDown());
+            StartCoroutine(WaitForMouseDown("AgentReactif"));
         }
 
+        // This method must be called from a GameObject in Unity
+        // Starts the Coroutine to create a wall on click
         public void createWall()
         {
             Debug.Log("Waiting for wall");
-            StartCoroutine(WaitForMouseDown());       
+            StartCoroutine(WaitForMouseDown("ElementStatique"));       
         }
 
-        IEnumerator WaitForMouseDown()
+        // This Coroutine waits for a left mouse click to create the selected item
+        IEnumerator WaitForMouseDown(string typeObject)
         {
             while (!Input.GetMouseButtonDown(0))
               yield return null;
+
+            if (typeObject == "AgentReactif")
+            {
+                RaycastHit hit;
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+                if (Physics.Raycast(ray, out hit))
+                {
+                    AddElement("AgentReactif", "Toto", new Vector3(hit.point.x, 0.5f, hit.point.z), new Vector3());
+                }
+            }
+            if (typeObject == "ElementStatique") // To create a wall, run a new coroutine waiting for a second input
+            {
+                RaycastHit hit;
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+                if (Physics.Raycast(ray, out hit))
+                {
+                    StartCoroutine(WaitForSecondMouseDown(new Vector3(hit.point.x, 0.5f, hit.point.z)));
+                }
+            }
+        }
+
+        // Waits for the second mouse input
+        // If both clicks are on a valid surface, creates a wall between the two clicks
+        IEnumerator WaitForSecondMouseDown(Vector3 firstPos)
+        {
+            while (!Input.GetMouseButtonDown(1))
+                yield return null;
 
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
             if (Physics.Raycast(ray, out hit))
             {
+                Vector3 secondPos = new Vector3(hit.point.x, 0.5f, hit.point.z);
+                AddElement("ElementStatique", "Wall", firstPos, secondPos);
+            }
+        }
+        // Instancie tous les éléments de l'environnement
+        public void AddElement(string typeElement, string nom, Vector3 firstPos, Vector3 secondPos)
+        {
+            // Creating agents
+            if (typeElement == "AgentReactif")
+            {
                 GameObject agentModel = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                 agentModel.GetComponent<Renderer>().material.color = Color.green;
                 agentModel.AddComponent<SphereCollider>();
                 agentModel.AddComponent<Rigidbody>();
-                AgentReactif.CreateComponent(agentModel, "Toto2", new Vector3(hit.point.x, 0.5f, hit.point.z));
-                Debug.Log(hit.point);
-            }            
+                AgentReactif.CreateComponent(agentModel, nom, firstPos);
+
+            }
+            // Creating walls
+            if (typeElement == "ElementStatique")
+            {
+                GameObject elementStatique = GameObject.CreatePrimitive(PrimitiveType.Cube);
+
+                elementStatique.GetComponent<Renderer>().material.color = Color.red;
+                elementStatique.AddComponent<BoxCollider>();
+                elementStatique.AddComponent<Rigidbody>();
+                elementStatique.GetComponent<Rigidbody>().mass = 10f;
+                ElementStatique.CreateComponent(elementStatique, nom, firstPos, secondPos);
+            }
         }
+
     }
 }

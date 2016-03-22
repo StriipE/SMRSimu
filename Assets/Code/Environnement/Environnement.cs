@@ -46,7 +46,9 @@ public class Environnement : MonoBehaviour
             elementStatique.transform.localScale += new Vector3(0, 0, 3f);
             elementStatique.GetComponent<Renderer>().material.color = Color.red;
             elementStatique.AddComponent<BoxCollider>();
-            ElementStatique.CreateComponent(elementStatique, nom, pos);
+            elementStatique.AddComponent<Rigidbody>();
+            elementStatique.GetComponent<Rigidbody>().mass = 10f;
+            ElementStatique.CreateComponent(elementStatique, nom, pos, pos);
    
         }
     }
