@@ -10,6 +10,11 @@ namespace Assets.Code.Environnement.Items
     {
         public static ElementStatique CreateComponent(GameObject gameObj, string nom, Vector3 firstPos, Vector3 secondPos)
         {
+            gameObj.GetComponent<Renderer>().material.color = Color.red;
+            gameObj.AddComponent<BoxCollider>();
+            gameObj.AddComponent<Rigidbody>();
+            gameObj.GetComponent<Rigidbody>().mass = 100f;
+
             ElementStatique newComponent = gameObj.AddComponent<ElementStatique>();
             Vector3 distance = secondPos - firstPos;
             newComponent.transform.localScale += distance;

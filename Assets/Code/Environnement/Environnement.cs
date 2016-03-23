@@ -33,9 +33,6 @@ public class Environnement : MonoBehaviour
         if (typeElement == "AgentReactif")
         {
             GameObject agentModel = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            agentModel.GetComponent<Renderer>().material.color = Color.green;
-            agentModel.AddComponent<SphereCollider>();
-            agentModel.AddComponent<Rigidbody>();
             AgentReactif.CreateComponent(agentModel, nom, pos);
 
         }
@@ -44,10 +41,6 @@ public class Environnement : MonoBehaviour
         {
             GameObject elementStatique = GameObject.CreatePrimitive(PrimitiveType.Cube);
             elementStatique.transform.localScale += new Vector3(0, 0, 3f);
-            elementStatique.GetComponent<Renderer>().material.color = Color.red;
-            elementStatique.AddComponent<BoxCollider>();
-            elementStatique.AddComponent<Rigidbody>();
-            elementStatique.GetComponent<Rigidbody>().mass = 10f;
             ElementStatique.CreateComponent(elementStatique, nom, pos, pos);
    
         }

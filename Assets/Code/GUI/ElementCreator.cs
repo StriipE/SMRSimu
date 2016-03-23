@@ -32,32 +32,25 @@ namespace Assets.Code.GUI
             StartCoroutine(WaitForMouseDown("ElementStatique"));       
         }
 
+        public void createSupply()
+        {
+            StartCoroutine(WaitForMouseDown("Supply"));
+        }
         // This Coroutine waits for a left mouse click to create the selected item
         IEnumerator WaitForMouseDown(string typeObject)
         {
             while (!Input.GetMouseButtonDown(0))
               yield return null;
 
-            if (typeObject == "AgentReactif")
-            {
-                RaycastHit hit;
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-                if (Physics.Raycast(ray, out hit))
-                {
+            RaycastHit hit;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out hit))
+                if (typeObject == "AgentReactif")
                     AddElement("AgentReactif", "Toto", new Vector3(hit.point.x, 0.5f, hit.point.z), new Vector3());
-                }
-            }
-            if (typeObject == "ElementStatique") // To create a wall, run a new coroutine waiting for a second input
-            {
-                RaycastHit hit;
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-                if (Physics.Raycast(ray, out hit))
-                {
+                if (typeObject == "ElementStatique") // To create a wall, run a new coroutine waiting for a second input
                     StartCoroutine(WaitForSecondMouseDown(new Vector3(hit.point.x, 0.5f, hit.point.z)));
-                }
-            }
+                if (typeObject == "Supply")
+                    AddElement("Supply", "Caisse", new Vector3(hit.point.x, 0.5f, hit.point.z), new Vector3());
         }
 
         // Waits for the second mouse input
@@ -83,9 +76,6 @@ namespace Assets.Code.GUI
             if (typeElement == "AgentReactif")
             {
                 GameObject agentModel = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                agentModel.GetComponent<Renderer>().material.color = Color.green;
-                agentModel.AddComponent<SphereCollider>();
-                agentModel.AddComponent<Rigidbody>();
                 AgentReactif.CreateComponent(agentModel, nom, firstPos);
 
             }
@@ -93,12 +83,13 @@ namespace Assets.Code.GUI
             if (typeElement == "ElementStatique")
             {
                 GameObject elementStatique = GameObject.CreatePrimitive(PrimitiveType.Cube);
-
-                elementStatique.GetComponent<Renderer>().material.color = Color.red;
-                elementStatique.AddComponent<BoxCollider>();
-                elementStatique.AddComponent<Rigidbody>();
-                elementStatique.GetComponent<Rigidbody>().mass = 10f;
                 ElementStatique.CreateComponent(elementStatique, nom, firstPos, secondPos);
+            }
+
+            if (typeElement == "Supply")
+            {
+                GameObject supply = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                Supply.CreateComponent(supply, nom, firstPos);
             }
         }
 
