@@ -25,12 +25,19 @@ namespace Assets.Code.Environnement.Agents
                 carriedCrate = value;
             }
         }
+        public float motorTorque;
+        public float brakeTorque;
+        public float steerAngle;
 
         public static AgentReactif CreateComponent(GameObject gameObj, string nom, Vector3 pos)
         {
             AgentReactif newComponent = gameObj.AddComponent<AgentReactif>();
             newComponent.name = nom;
             newComponent.transform.position = pos;
+            newComponent.motorTorque = 0;
+            newComponent.brakeTorque = 0;
+            newComponent.steerAngle = 0;
+
             return newComponent;
         }
 
@@ -68,23 +75,22 @@ namespace Assets.Code.Environnement.Agents
                     }
                 }
 
-                // Moving and turning the agent towards the closest supply
+                // Find the agent wheels and sets his speed / angle
                 var wheels = GetComponentsInChildren<WheelCollider>();
                 Debug.DrawLine(transform.position, transform.forward * 10, Color.red);
-                wheels[0].motorTorque = 10f;
-                wheels[1].motorTorque = 10f;
-                wheels[0].brakeTorque = 0f;
-                wheels[1].brakeTorque = 0f;
-                wheels[2].steerAngle = 30f;
-                wheels[3].steerAngle = 30f;
+                motorTorque = 10f;
+                steerAngle = 30f;
 
                 // Stop the agent rotation when he's aligned with the supply
                 RaycastHit hit;
                 if (closestSupply.GetComponent<Collider>().Raycast(new Ray(transform.position, transform.forward), out hit, 10f))
-                {
-                    wheels[2].steerAngle = 0;
-                    wheels[3].steerAngle = 0;
-                }
+                    steerAngle = 0f;
+
+                // Moving and turning the agent towards the closest supply
+                wheels[0].motorTorque = motorTorque;
+                wheels[1].motorTorque = motorTorque;
+                wheels[2].steerAngle = steerAngle;
+                wheels[3].steerAngle = steerAngle;
 
                 if (Vector3.Distance(transform.position, closestSupply.transform.position) < 0.4f) // If the agent is close enough, he picks up the crate
                     Carry(closestSupply);
@@ -114,20 +120,21 @@ namespace Assets.Code.Environnement.Agents
             }
 
             var wheels = GetComponentsInChildren<WheelCollider>();
-            Debug.DrawLine(transform.position, closestZone.transform.position , Color.red);
-            wheels[0].motorTorque = 10f;
-            wheels[1].motorTorque = 10f;
-            wheels[0].brakeTorque = 0f;
-            wheels[1].brakeTorque = 0f;
-            wheels[2].steerAngle = 30f;
-            wheels[3].steerAngle = 30f;
+            Debug.DrawLine(transform.position, transform.forward * 10 , Color.red);
+            motorTorque = 10f;
+            steerAngle = 30f;
 
             RaycastHit hit;
-            if (closestZone.GetComponent<Collider>().Raycast(new Ray(transform.position, closestZone.transform.position), out hit, 20f))
-            {
-                wheels[2].steerAngle = 0;
-                wheels[3].steerAngle = 0;
-            }
+            closestZone.GetComponent<BoxCollider>().size = new Vector3(5f, 2f, 5f);
+            closestZone.GetComponent<BoxCollider>().isTrigger = true;
+            if (closestZone.GetComponent<BoxCollider>().Raycast(new Ray(transform.position, transform.forward), out hit, 10f))
+                steerAngle = 0f;
+
+            wheels[0].motorTorque = motorTorque;
+            wheels[1].motorTorque = motorTorque;
+            wheels[2].steerAngle = steerAngle;
+            wheels[3].steerAngle = steerAngle;
+
 
             if (Vector3.Distance(transform.position, closestZone.transform.position) < 0.4f) // If the agent is close enough, he picks up the crate
                 Drop(closestZone);
@@ -135,11 +142,12 @@ namespace Assets.Code.Environnement.Agents
 
         public void Carry(ACarryable item)
         {
+
             item.transform.position = transform.position + new Vector3(0, 0.2f, 0);
             CarriedCrate = item;
             var wheels = GetComponentsInChildren<WheelCollider>();
-            wheels[0].brakeTorque = 10f;
-            wheels[1].brakeTorque = 10f;
+         //   wheels[0].brakeTorque = 10f;
+       //     wheels[1].brakeTorque = 10f;
         }
 
         public void Drop(AChain chain)
@@ -147,8 +155,8 @@ namespace Assets.Code.Environnement.Agents
             CarriedCrate.transform.position = transform.position + new Vector3(0, 0, 0.5f);
             CarriedCrate = null;
             var wheels = GetComponentsInChildren<WheelCollider>();
-            wheels[0].brakeTorque = 10f;
-            wheels[1].brakeTorque = 10f;
+         //   wheels[0].brakeTorque = 10f;
+          //  wheels[1].brakeTorque = 10f;
         }
     }
 }

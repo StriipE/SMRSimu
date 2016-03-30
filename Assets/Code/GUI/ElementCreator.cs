@@ -20,7 +20,6 @@ namespace Assets.Code.GUI
         // Starts the Coroutine to create an agent on click
         public void createAgent()
         {
-            Debug.Log("Attente d'un agent");
             StartCoroutine(WaitForMouseDown("AgentReactif"));
         }
 
@@ -28,7 +27,6 @@ namespace Assets.Code.GUI
         // Starts the Coroutine to create a wall on click
         public void createWall()
         {
-            Debug.Log("Waiting for wall");
             StartCoroutine(WaitForMouseDown("ElementStatique"));       
         }
 
