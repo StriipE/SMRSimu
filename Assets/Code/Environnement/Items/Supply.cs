@@ -6,14 +6,15 @@ using UnityEngine;
 
 namespace Assets.Code.Environnement.Items
 {
-    class Supply : AItem
+    class Supply : ACarryable
     {
         public static Supply CreateComponent(GameObject gameObj, string nom, Vector3 pos)
         {
             gameObj.GetComponent<Renderer>().material.color = Color.blue;
-            gameObj.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+            gameObj.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
             gameObj.AddComponent<BoxCollider>();
             gameObj.AddComponent<Rigidbody>();
+            gameObj.GetComponent<Rigidbody>().mass = 20f;
 
             Supply newComponent = gameObj.AddComponent<Supply>();
             newComponent.transform.position = pos;

@@ -75,7 +75,7 @@ namespace Assets.Code.GUI
             // Creating agents
             if (typeElement == "AgentReactif")
             {
-                GameObject agentModel = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                GameObject agentModel = Instantiate(Resources.Load("AgentReactif/AgentReactifv2")) as GameObject;
                 AgentReactif.CreateComponent(agentModel, nom, firstPos);
 
             }
