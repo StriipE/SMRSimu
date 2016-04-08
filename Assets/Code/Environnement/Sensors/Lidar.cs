@@ -14,6 +14,7 @@ namespace Assets.Code.Environnement.Sensors
         private int currentDegree;
         private float range;
 
+        public float startTime;
         public int PollingRate
         {
             get
@@ -75,15 +76,16 @@ namespace Assets.Code.Environnement.Sensors
             }
         }
 
-        public static Lidar CreateComponent(GameObject gameObj, string nom, Vector3 pos)
+        // Adds Lidar composent to a game object
+        public static Lidar CreateComponent(GameObject gameObj, string nom)
         {
             Lidar newComponent = gameObj.AddComponent<Lidar>();
             newComponent.name = nom;
-            newComponent.transform.position = pos;
 
             return newComponent;
         }
 
+        // Lauches the polling routine on creation of the Lidar
         void Start()
         {
             PollingRate = 500;
@@ -95,16 +97,26 @@ namespace Assets.Code.Environnement.Sensors
             InvokeRepeating("updatePolling", 0.0005f, 0.0005f);
         }
 
+        // Adds the value fond by the Lidar lasor at this angle and increments the angle by 1° 
         public void updatePolling()
         {
             RaycastHit hit;
+            float endTime = 0;
+
+            if (CurrentDegree == 0)
+                startTime = Time.time;
+            if (CurrentDegree == 270)
+            {
+                endTime = Time.time;
+                Debug.Log(endTime - startTime);
+            }
             transform.rotation = Quaternion.AngleAxis((currentDegree - DegreesRange / 2), Vector3.up);
             if (Physics.Raycast(transform.position, transform.forward, out hit, Range))
                 Data[CurrentDegree] = hit.distance;
             else
                 Data[CurrentDegree] = null;
 
-            Debug.DrawLine(transform.position, transform.forward * 10, Color.red);
+            Debug.DrawLine(transform.position, transform.forward * 10, Color.blue);
             CurrentDegree = (CurrentDegree++ <= DegreesRange) ? CurrentDegree++ : 0;
         }
         public override void Move(Vector3 newPos)

@@ -6,6 +6,7 @@ using System.Text;
 using System.Collections;
 using Assets.Code.Environnement.Agents;
 using Assets.Code.Environnement.Items;
+using Assets.Code.Environnement.Sensors;
 
 namespace Assets.Code.GUI
 {
@@ -27,30 +28,49 @@ namespace Assets.Code.GUI
         // Starts the Coroutine to create a wall on click
         public void createWall()
         {
-            StartCoroutine(WaitForMouseDown("ElementStatique"));       
+            StartCoroutine(WaitForMouseDown("ElementStatique"));
         }
 
         public void createSupply()
         {
             StartCoroutine(WaitForMouseDown("Supply"));
         }
+
+        public void addSensor()
+        {
+            StartCoroutine(WaitForMouseDown("Sensor"));
+        }
         // This Coroutine waits for a left mouse click to create the selected item
         IEnumerator WaitForMouseDown(string typeObject)
         {
             while (!Input.GetMouseButtonDown(0))
-              yield return null;
+                yield return null;
 
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit))
+            {
                 if (typeObject == "AgentReactif")
                     AddElement("AgentReactif", "Toto", new Vector3(hit.point.x, 0.5f, hit.point.z), new Vector3());
                 if (typeObject == "ElementStatique") // To create a wall, run a new coroutine waiting for a second input
                     StartCoroutine(WaitForSecondMouseDown(new Vector3(hit.point.x, 0.5f, hit.point.z)));
                 if (typeObject == "Supply")
                     AddElement("Supply", "Caisse", new Vector3(hit.point.x, 0.5f, hit.point.z), new Vector3());
+                if (typeObject == "Sensor")
+                {
+                    try
+                    {
+                        AgentReactif agent = hit.rigidbody.GetComponent<AgentReactif>();
+                        AddSensorToAgent("Lidar", "Lidar", agent);
+                        Debug.Log("agent hit");
+                    }
+                    catch (NullReferenceException e)
+                    {
+                        Debug.Log(e);
+                    }
+                }
+            }
         }
-
         // Waits for the second mouse input
         // If both clicks are on a valid surface, creates a wall between the two clicks
         IEnumerator WaitForSecondMouseDown(Vector3 firstPos)
@@ -89,7 +109,17 @@ namespace Assets.Code.GUI
                 GameObject supply = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 Supply.CreateComponent(supply, nom, firstPos);
             }
+            
         }
 
+        public void AddSensorToAgent(string typeSensor, string nom, AAgent agent)
+        {
+            if (typeSensor == "Lidar")
+            {
+                GameObject sensor = new GameObject();
+                Lidar lidar = Lidar.CreateComponent(sensor, nom);
+                agent.Sensors.Add(lidar);
+            }
+        }
     }
 }

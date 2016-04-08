@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Assets.Code.Environnement.Agents
 {
-    class AgentReactif : AAgent
+    public class AgentReactif : AAgent
     {
         private ACarryable carriedCrate;
         public ACarryable CarriedCrate
@@ -26,6 +26,7 @@ namespace Assets.Code.Environnement.Agents
                 carriedCrate = value;
             }
         }
+
         public float motorTorque;
         public float brakeTorque;
         public float steerAngle;
@@ -150,18 +151,12 @@ namespace Assets.Code.Environnement.Agents
 
             item.transform.position = transform.position + new Vector3(0, 0.2f, 0);
             CarriedCrate = item;
-            var wheels = GetComponentsInChildren<WheelCollider>();
-         //   wheels[0].brakeTorque = 10f;
-       //     wheels[1].brakeTorque = 10f;
         }
 
         public void Drop(AChain chain)
         {
             CarriedCrate.transform.position = transform.position + new Vector3(0, 0, 0.5f);
             CarriedCrate = null;
-            var wheels = GetComponentsInChildren<WheelCollider>();
-         //   wheels[0].brakeTorque = 10f;
-          //  wheels[1].brakeTorque = 10f;
         }
     }
 }
