@@ -1,5 +1,6 @@
 ﻿using Assets.Code.Environnement.Items;
 using Assets.Code.Environnement.Chains;
+using Assets.Code.Environnement.Sensors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,13 +32,14 @@ namespace Assets.Code.Environnement.Agents
 
         public static AgentReactif CreateComponent(GameObject gameObj, string nom, Vector3 pos)
         {
+          //  gameObj.AddComponent<Lidar>();
             AgentReactif newComponent = gameObj.AddComponent<AgentReactif>();
             newComponent.name = nom;
             newComponent.transform.position = pos;
             newComponent.motorTorque = 0;
             newComponent.brakeTorque = 0;
             newComponent.steerAngle = 0;
-
+            
             return newComponent;
         }
 
@@ -59,6 +61,12 @@ namespace Assets.Code.Environnement.Agents
         {
             Supply[] supplies = FindObjectsOfType<Supply>();
             Supply closestSupply = null;
+
+            // Find the agent wheels and sets his speed / angle
+            var wheels = GetComponentsInChildren<WheelCollider>();
+            Debug.DrawLine(transform.position, transform.forward * 10, Color.red);
+            motorTorque = 10f;
+            steerAngle = 30f;
             // Searching for closest supply if there is 
             if (supplies.Length > 0)
             {
@@ -74,12 +82,7 @@ namespace Assets.Code.Environnement.Agents
                         closestSupply = supply;
                     }
                 }
-
-                // Find the agent wheels and sets his speed / angle
-                var wheels = GetComponentsInChildren<WheelCollider>();
-                Debug.DrawLine(transform.position, transform.forward * 10, Color.red);
-                motorTorque = 10f;
-                steerAngle = 30f;
+          
 
                 // Stop the agent rotation when he's aligned with the supply
                 RaycastHit hit;
@@ -92,10 +95,12 @@ namespace Assets.Code.Environnement.Agents
                 wheels[2].steerAngle = steerAngle;
                 wheels[3].steerAngle = steerAngle;
 
-                if (Vector3.Distance(transform.position, closestSupply.transform.position) < 0.4f) // If the agent is close enough, he picks up the crate
+                if (Vector3.Distance(transform.position, closestSupply.transform.position) < 0.5f) // If the agent is close enough, he picks up the crate
                     Carry(closestSupply);
-
             }
+            else
+                motorTorque = 0;
+
         }
         public void findClosestDropZone()
         {
@@ -120,7 +125,7 @@ namespace Assets.Code.Environnement.Agents
             }
 
             var wheels = GetComponentsInChildren<WheelCollider>();
-            Debug.DrawLine(transform.position, transform.forward * 10 , Color.red);
+           // Debug.DrawLine(transform.position, transform.forward * 10 , Color.red);
             motorTorque = 10f;
             steerAngle = 30f;
 
@@ -136,7 +141,7 @@ namespace Assets.Code.Environnement.Agents
             wheels[3].steerAngle = steerAngle;
 
 
-            if (Vector3.Distance(transform.position, closestZone.transform.position) < 0.4f) // If the agent is close enough, he picks up the crate
+            if (Vector3.Distance(transform.position, closestZone.transform.position) < 0.7f) // If the agent is close enough, he picks up the crate
                 Drop(closestZone);
         }
 

@@ -13,7 +13,7 @@ namespace Assets.Code.Environnement.Items
             gameObj.GetComponent<Renderer>().material.color = Color.red;
             gameObj.AddComponent<BoxCollider>();
             gameObj.AddComponent<Rigidbody>();
-            gameObj.GetComponent<Rigidbody>().mass = 100f;
+            gameObj.GetComponent<Rigidbody>().mass = 10000f;
 
             ElementStatique newComponent = gameObj.AddComponent<ElementStatique>();
             Vector3 distance = secondPos - firstPos;

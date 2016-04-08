@@ -8,6 +8,7 @@ namespace Assets.Code.Environnement.Items
 {
     class Supply : ACarryable
     {
+        public bool available; 
         public static Supply CreateComponent(GameObject gameObj, string nom, Vector3 pos)
         {
             gameObj.GetComponent<Renderer>().material.color = Color.blue;
@@ -19,6 +20,7 @@ namespace Assets.Code.Environnement.Items
             Supply newComponent = gameObj.AddComponent<Supply>();
             newComponent.transform.position = pos;
             newComponent.name = nom;
+            newComponent.available = true;
 
             return newComponent;
         }
