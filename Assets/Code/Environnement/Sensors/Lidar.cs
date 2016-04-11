@@ -101,23 +101,42 @@ namespace Assets.Code.Environnement.Sensors
         public void updatePolling()
         {
             RaycastHit hit;
-            float endTime = 0;
+            //float endTime = 0;
+            Transform parentTransform = transform.parent;
+            // Benchmark
+            //if (CurrentDegree == 0)
+            //    startTime = Time.time;
 
-            if (CurrentDegree == 0)
-                startTime = Time.time;
-            if (CurrentDegree == 270)
+
+
+            // Do several iterations to get closer to 2000 mesures per second 
+            for (int i = 0; i <= 6; i++)
             {
-                endTime = Time.time;
-                Debug.Log(endTime - startTime);
+                float angle = Vector3.Angle(Vector3.forward, parentTransform.forward);
+                Vector3 cross = Vector3.Cross(Vector3.forward, parentTransform.forward);
+                if (cross.y < 0)
+                    angle = -angle;
+
+                transform.rotation = Quaternion.AngleAxis((currentDegree - DegreesRange / 2) + angle, Vector3.up);
+
+                if (Physics.Raycast(transform.position, transform.forward, out hit, Range))
+                    Data[CurrentDegree] = hit.distance;
+                else
+                    Data[CurrentDegree] = null;
+
+               
+                // Benchmark
+                //if (CurrentDegree == 269)
+                //{
+                //    endTime = Time.time;
+                //    Debug.Log(270 * 1 / (endTime - startTime));
+                //}
+
+                CurrentDegree = (CurrentDegree + 1) % DegreesRange;
             }
-            transform.rotation = Quaternion.AngleAxis((currentDegree - DegreesRange / 2), Vector3.up);
-            if (Physics.Raycast(transform.position, transform.forward, out hit, Range))
-                Data[CurrentDegree] = hit.distance;
-            else
-                Data[CurrentDegree] = null;
 
             Debug.DrawLine(transform.position, transform.forward * 10, Color.blue);
-            CurrentDegree = (CurrentDegree++ <= DegreesRange) ? CurrentDegree++ : 0;
+            CurrentDegree = (CurrentDegree + 1) % DegreesRange;
         }
         public override void Move(Vector3 newPos)
         {

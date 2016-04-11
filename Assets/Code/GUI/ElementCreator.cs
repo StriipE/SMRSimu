@@ -87,6 +87,8 @@ namespace Assets.Code.GUI
                 AddElement("ElementStatique", "Wall", firstPos, secondPos);
             }
         }
+
+
         // Instancie tous les éléments de l'environnement
         public void AddElement(string typeElement, string nom, Vector3 firstPos, Vector3 secondPos)
         {
@@ -118,6 +120,9 @@ namespace Assets.Code.GUI
             {
                 GameObject sensor = new GameObject();
                 Lidar lidar = Lidar.CreateComponent(sensor, nom);
+                sensor.transform.parent = agent.transform;
+                sensor.transform.position = agent.transform.position;
+
                 agent.Sensors.Add(lidar);
             }
         }
