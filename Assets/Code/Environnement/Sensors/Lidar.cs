@@ -101,9 +101,9 @@ namespace Assets.Code.Environnement.Sensors
         public void updatePolling()
         {
             RaycastHit hit;
-            //float endTime = 0;
             Transform parentTransform = transform.parent;
             // Benchmark
+            //float endTime = 0;
             //if (CurrentDegree == 0)
             //    startTime = Time.time;
 
@@ -112,8 +112,8 @@ namespace Assets.Code.Environnement.Sensors
             // Do several iterations to get closer to 2000 mesures per second 
             for (int i = 0; i <= 6; i++)
             {
-                float angle = Vector3.Angle(Vector3.forward, parentTransform.forward);
-                Vector3 cross = Vector3.Cross(Vector3.forward, parentTransform.forward);
+                float angle = Vector3.Angle(Vector3.forward, parentTransform.forward); // Find the angle of the agent on which the sensor is attached
+                Vector3 cross = Vector3.Cross(Vector3.forward, parentTransform.forward); // Cross product to find if the angle should be positive or not
                 if (cross.y < 0)
                     angle = -angle;
 

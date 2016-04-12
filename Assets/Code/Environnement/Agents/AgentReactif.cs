@@ -51,10 +51,10 @@ namespace Assets.Code.Environnement.Agents
 
         void Update()
         {
-            if (carriedCrate == null)
-                findClosestSupply();
-            else
-                findClosestDropZone();
+            //if (carriedCrate == null)
+            //    findClosestSupply();
+            //else
+            //    findClosestDropZone();
         }
 
         // Looks for the closest supply for this agent

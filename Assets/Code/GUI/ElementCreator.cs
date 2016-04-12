@@ -12,9 +12,11 @@ namespace Assets.Code.GUI
 {
     class ElementCreator : MonoBehaviour
     {
+        GameObject canvasSensor;
         void Start()
         {
-
+            canvasSensor = GameObject.FindGameObjectWithTag("CanvasSensors");
+            canvasSensor.GetComponent<Canvas>().enabled = false;
         }
 
         // This method must be called from a GameObject in Unity
@@ -36,9 +38,18 @@ namespace Assets.Code.GUI
             StartCoroutine(WaitForMouseDown("Supply"));
         }
 
-        public void addSensor()
+        public void showSensorPanel()
         {
-            StartCoroutine(WaitForMouseDown("Sensor"));
+            canvasSensor.GetComponent<Canvas>().enabled = !canvasSensor.GetComponent<Canvas>().enabled;
+        }
+        public void addLidar()
+        {
+            StartCoroutine(WaitForMouseDown("Lidar"));          
+        }
+
+        public void addRFID()
+        {
+            StartCoroutine(WaitForMouseDown("RFID"));
         }
         // This Coroutine waits for a left mouse click to create the selected item
         IEnumerator WaitForMouseDown(string typeObject)
@@ -56,7 +67,7 @@ namespace Assets.Code.GUI
                     StartCoroutine(WaitForSecondMouseDown(new Vector3(hit.point.x, 0.5f, hit.point.z)));
                 if (typeObject == "Supply")
                     AddElement("Supply", "Caisse", new Vector3(hit.point.x, 0.5f, hit.point.z), new Vector3());
-                if (typeObject == "Sensor")
+                if (typeObject == "Lidar")
                 {
                     try
                     {
@@ -64,9 +75,34 @@ namespace Assets.Code.GUI
                         AddSensorToAgent("Lidar", "Lidar", agent);
                         Debug.Log("agent hit");
                     }
-                    catch (NullReferenceException e)
+                    catch (NullReferenceException)
                     {
-                        Debug.Log(e);
+                       
+                    }
+                }
+                if (typeObject == "RFID")
+                {
+                    try
+                    {
+                        if (hit.rigidbody.GetComponent<AgentReactif>())
+                        {
+                            AgentReactif agent = hit.rigidbody.GetComponent<AgentReactif>();
+                            AddSensorToAgent("RFID", "RFID", agent);
+                        }
+                        else if (hit.rigidbody.GetComponent<Supply>())
+                        {
+                            Supply supply = hit.rigidbody.GetComponent<Supply>();
+                            AddSensorToItem("RFID", "RFID", supply);
+                        }
+                        else if (hit.rigidbody.GetComponent<ElementStatique>())
+                        {
+                            ElementStatique staticElement = hit.rigidbody.GetComponent<ElementStatique>();
+                            AddSensorToItem("RFID", "RFID", staticElement);
+                        }
+                    }
+                    catch (NullReferenceException)
+                    {
+
                     }
                 }
             }
@@ -116,14 +152,36 @@ namespace Assets.Code.GUI
 
         public void AddSensorToAgent(string typeSensor, string nom, AAgent agent)
         {
+            GameObject sensor = new GameObject();
+            sensor.transform.parent = agent.transform;
+            sensor.transform.position = agent.transform.position;
+
             if (typeSensor == "Lidar")
             {
-                GameObject sensor = new GameObject();
                 Lidar lidar = Lidar.CreateComponent(sensor, nom);
-                sensor.transform.parent = agent.transform;
-                sensor.transform.position = agent.transform.position;
-
                 agent.Sensors.Add(lidar);
+            }
+            if (typeSensor == "RFID")
+            {
+                RFID rfid = RFID.CreateComponent(sensor, nom);
+                rfid.RfidTag = RFID_Tags.Agent;
+
+                agent.Sensors.Add(rfid);
+            }
+        }
+
+        public void AddSensorToItem(string typeSensor, string nom, AItem item)
+        {
+            GameObject sensor = new GameObject();
+            sensor.transform.parent = item.transform;
+            sensor.transform.position = item.transform.position;
+
+            if (typeSensor == "RFID")
+            {
+                RFID rfid = RFID.CreateComponent(sensor, nom);
+                rfid.RfidTag = RFID_Tags.Crate;
+
+                item.Sensors.Add(rfid);
             }
         }
     }

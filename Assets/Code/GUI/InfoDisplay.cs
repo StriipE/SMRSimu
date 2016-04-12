@@ -28,7 +28,7 @@ namespace Assets.Code.GUI
             {
                 Display(hit.collider.gameObject);
             }
-            selectedObject = hit.collider.gameObject;
+           // selectedObject = hit.collider.gameObject;
         }
 
         public void Display(GameObject gameObject)

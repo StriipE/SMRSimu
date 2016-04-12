@@ -8,7 +8,18 @@ namespace Assets.Code.Environnement.Items
 {
     public abstract class AItem : AElement
     {
+        private List<ASensor> sensors;
+        public List<ASensor> Sensors
+        {
+            get
+            {
+                return sensors;
+            }
 
-
+            set
+            {
+                sensors = value;
+            }
+        }
     }
 }
