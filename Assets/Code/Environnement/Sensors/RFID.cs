@@ -61,7 +61,7 @@ namespace Assets.Code.Environnement.Sensors
         {
             try
             {
-                if(collider.gameObject.GetComponent<RFID>().RfidTag == RFID_Tags.Crate)
+                if(RfidTag == RFID_Tags.Agent && collider.gameObject.GetComponent<RFID>().RfidTag == RFID_Tags.Crate)
                 {
                     Debug.Log("It works");
                 }

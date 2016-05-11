@@ -16,11 +16,22 @@ public class Environnement : MonoBehaviour
         // Création de l'environnement de travail
         environnement = GameObject.CreatePrimitive(PrimitiveType.Plane);
         environnement.transform.position = new Vector3(0, 0, 0);
-        environnement.transform.localScale = new Vector3(1, 1, 1);
+        environnement.transform.localScale = new Vector3(2, 2, 2);
 
         AddElement("AgentReactif", "Toto", new Vector3(1.0f, 0.1f, -1.0f));
-        AddElement("ElementStatique", "Mur", new Vector3(3.0f, 0.5f, 0.0f));
-        AddElement("SupplyZone", "Zone", new Vector3(-4.20f, 0.01f, -4.20f));
+
+        AddWall(new Vector3(-9.5f, 0.5f, -9.5f), new Vector3(-9.5f, 0.5f, 9.5f));
+        AddWall(new Vector3(9.5f, 0.5f, -9.5f), new Vector3(9.5f, 0.5f, 9.5f));
+        AddWall(new Vector3(-8.5f, 0.5f, 9.5f), new Vector3(8.5f, 0.5f, 9.5f));
+        AddWall(new Vector3(-8.5f, 0.5f, -9.5f), new Vector3(8.5f, 0.5f, -9.5f));
+
+        AddWall(new Vector3(3f, 0.5f, 2.5f), new Vector3(3f, 0.5f, -6f));
+        AddWall(new Vector3(6.5f, 0.5f, 2.5f), new Vector3(6.5f, 0.5f, -6f));
+        AddWall(new Vector3(-8.5f, 0.5f, 4f), new Vector3(-1f, 0.5f, 4f));
+        AddWall(new Vector3(-1f, 0.5f, 4f), new Vector3(-1f, 0.5f, -6f));
+        AddWall(new Vector3(3f, 0.5f, 5.5f), new Vector3(6.5f, 0.5f, 5.5f));
+
+        AddElement("SupplyZone", "Zone", new Vector3(-6.0f, 0.01f, -6.0f));
     }
 
     // Update is called once per frame
@@ -38,20 +49,17 @@ public class Environnement : MonoBehaviour
             GameObject agentModel = Instantiate(Resources.Load("AgentReactif/AgentReactifv2")) as GameObject;
             AgentReactif.CreateComponent(agentModel, nom, pos);
         }
-        // Chargement des items
-        if (typeElement == "ElementStatique")
-        {
-            GameObject elementStatique = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            elementStatique.transform.localScale += new Vector3(0, 0, 3f);
-            ElementStatique.CreateComponent(elementStatique, nom, pos, pos);
-   
-        }
-
         if (typeElement == "SupplyZone")
         {
             GameObject supplyZone = GameObject.CreatePrimitive(PrimitiveType.Plane);
             SupplyZone.CreateComponent(supplyZone, nom, pos, new Vector3(pos.x + 1.5f, 0.01f, pos.z + 1.5f));
         }
+    }
+
+    public void AddWall(Vector3 firstPos, Vector3 secondPos)
+    {
+        GameObject elementStatique = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        ElementStatique.CreateComponent(elementStatique, "Wall", firstPos, secondPos);
     }
 }
 

@@ -73,7 +73,6 @@ namespace Assets.Code.GUI
                     {
                         AgentReactif agent = hit.rigidbody.GetComponent<AgentReactif>();
                         AddSensorToAgent("Lidar", "Lidar", agent);
-                        Debug.Log("agent hit");
                     }
                     catch (NullReferenceException)
                     {
@@ -160,6 +159,7 @@ namespace Assets.Code.GUI
             {
                 Lidar lidar = Lidar.CreateComponent(sensor, nom);
                 agent.Sensors.Add(lidar);
+                agent.AddLidarListner(lidar);
             }
             if (typeSensor == "RFID")
             {

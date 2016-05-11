@@ -30,7 +30,7 @@ namespace Assets.Code.Environnement.Agents
         public float motorTorque;
         public float brakeTorque;
         public float steerAngle;
-
+        public WheelCollider[] wheels;
         public static AgentReactif CreateComponent(GameObject gameObj, string nom, Vector3 pos)
         {
           //  gameObj.AddComponent<Lidar>();
@@ -40,7 +40,8 @@ namespace Assets.Code.Environnement.Agents
             newComponent.motorTorque = 0;
             newComponent.brakeTorque = 0;
             newComponent.steerAngle = 0;
-            
+            newComponent.Sensors = new List<ASensor>();
+            newComponent.wheels = gameObj.GetComponentsInChildren<WheelCollider>();
             return newComponent;
         }
 
@@ -51,6 +52,12 @@ namespace Assets.Code.Environnement.Agents
 
         void Update()
         {
+            motorTorque = 5f;
+            //var wheels = GetComponentsInChildren<WheelCollider>();
+            wheels[0].motorTorque = motorTorque;
+            wheels[1].motorTorque = motorTorque;
+            wheels[2].steerAngle = steerAngle;
+            wheels[3].steerAngle = steerAngle;
             //if (carriedCrate == null)
             //    findClosestSupply();
             //else
@@ -64,7 +71,7 @@ namespace Assets.Code.Environnement.Agents
             Supply closestSupply = null;
 
             // Find the agent wheels and sets his speed / angle
-            var wheels = GetComponentsInChildren<WheelCollider>();
+            //var wheels = GetComponentsInChildren<WheelCollider>();
             Debug.DrawLine(transform.position, transform.forward * 10, Color.red);
             motorTorque = 10f;
             steerAngle = 30f;
@@ -125,7 +132,7 @@ namespace Assets.Code.Environnement.Agents
                 }
             }
 
-            var wheels = GetComponentsInChildren<WheelCollider>();
+           // var wheels = GetComponentsInChildren<WheelCollider>();
            // Debug.DrawLine(transform.position, transform.forward * 10 , Color.red);
             motorTorque = 10f;
             steerAngle = 30f;
@@ -157,6 +164,25 @@ namespace Assets.Code.Environnement.Agents
         {
             CarriedCrate.transform.position = transform.position + new Vector3(0, 0, 0.5f);
             CarriedCrate = null;
+        }
+
+        public override void HandleOnNearWallDetected(int angle, float distance)
+        {
+            Debug.Log("Wall close " + angle.ToString() + " " + distance.ToString());
+            if (angle < Lidar.degreesRange / 2)
+                steerAngle = -30f;
+            else
+                steerAngle = 30f;
+        }
+
+        public override void HandleOnNearWallEscaped()
+        {
+            steerAngle = 0;
+        }
+
+        public override void HandleOnNoWallInFront()
+        {
+            steerAngle = 0;
         }
     }
 }
