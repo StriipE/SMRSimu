@@ -13,7 +13,8 @@ namespace Assets.Code.Environnement.Sensors
         DropZone
     }
 
-    class RFID : ASensor
+    public delegate void NearCrateDetected(Transform RfidTransform); // Sending the crate position with the event
+    public class RFID : ASensor
     {
         private int sensorRange;
         public int SensorRange
@@ -43,6 +44,7 @@ namespace Assets.Code.Environnement.Sensors
             }
         }
 
+        public event NearCrateDetected OnNearCrateDetected;
         public static RFID CreateComponent(GameObject gameObj, string nom)
         {
             RFID newComponent = gameObj.AddComponent<RFID>();
@@ -63,7 +65,7 @@ namespace Assets.Code.Environnement.Sensors
             {
                 if(RfidTag == RFID_Tags.Agent && collider.gameObject.GetComponent<RFID>().RfidTag == RFID_Tags.Crate)
                 {
-                    Debug.Log("It works");
+                    OnNearCrateDetected(collider.gameObject.transform);
                 }
             }
             catch (NullReferenceException)

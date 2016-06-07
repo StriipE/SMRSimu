@@ -44,9 +44,15 @@ namespace Assets.Code.Environnement.Agents
             lidar.OnNoWallInFront += HandleOnNoWallInFront;
         }
 
+        public void AddRFIDListner(RFID rfid)
+        {
+            rfid.OnNearCrateDetected += HandleOnNearCreateDetected;
+        }
+
         public abstract void HandleOnNearWallDetected(int angle, float distance);
         public abstract void HandleOnNearWallEscaped();
         public abstract void HandleOnNoWallInFront();
+        public abstract void HandleOnNearCreateDetected(Transform RfidTransform);
     }
 
 }

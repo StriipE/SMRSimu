@@ -139,42 +139,45 @@ namespace Assets.Code.Environnement.Sensors
             {
                 Data[angle] = hit.distance;
 
-                if (emergencyEscapeFlag == true)
+                if (angle > DegreesRange / 2 - 30 && angle < DegreesRange / 2 + 30)
                 {
-                    if (Data[closeWallDegree] > 0.5f)
+                    if (emergencyEscapeFlag == true)
                     {
-                        OnNearWallEscaped();
-                        emergencyEscapeFlag = false;
-                    }
-                }
-                if ((Data[DegreesRange / 2] ?? 5.0f) > 2f && emergencyEscapeFlag == false)
-                {
-                    OnNoWallInFront();
-                    wallNearFlag = false;
-                    if (hit.distance < 0.5f)
-                    {
-                        OnNearWallDetected(angle, hit.distance);
-                        emergencyEscapeFlag = true;
-                        closeWallDegree = angle;
-                    }
-                }
-                else
-                {
-                    if (hit.distance < 1.5f) // Triggers a near wall event when agent gets too close to a wall.
-                        if (OnNearWallDetected != null && wallNearFlag == false)
-                        {
-                            OnNearWallDetected(angle, hit.distance);
-                            wallNearFlag = true;
-                            closeWallDegree = angle;
-                        }
-
-                    if (angle == closeWallDegree && wallNearFlag == true)
-                        if (hit.distance > 1.5f)
+                        if (Data[closeWallDegree] > 0.5f)
                         {
                             OnNearWallEscaped();
-                            wallNearFlag = false;
-                            closeWallDegree = -1;
+                            emergencyEscapeFlag = false;
                         }
+                    }
+                    if ((Data[DegreesRange / 2] ?? 5.0f) > 2f && emergencyEscapeFlag == false)
+                    {
+                        OnNoWallInFront();
+                        wallNearFlag = false;
+                        if (hit.distance < 0.5f)
+                        {
+                            OnNearWallDetected(angle, hit.distance);
+                            emergencyEscapeFlag = true;
+                            closeWallDegree = angle;
+                        }
+                    }
+                    else
+                    {
+                        if (hit.distance < 1.5f) // Triggers a near wall event when agent gets too close to a wall.
+                            if (OnNearWallDetected != null && wallNearFlag == false)
+                            {
+                                OnNearWallDetected(angle, hit.distance);
+                                wallNearFlag = true;
+                                closeWallDegree = angle;
+                            }
+
+                        if (angle == closeWallDegree && wallNearFlag == true) // Escapes the near wall event when agent is far enough  
+                            if (hit.distance > 1.5f)
+                            {
+                                OnNearWallEscaped();
+                                wallNearFlag = false;
+                                closeWallDegree = -1;
+                            }
+                    }
                 }
             }
             else

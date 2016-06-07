@@ -167,6 +167,7 @@ namespace Assets.Code.GUI
                 rfid.RfidTag = RFID_Tags.Agent;
 
                 agent.Sensors.Add(rfid);
+                agent.AddRFIDListner(rfid);
             }
         }
 
